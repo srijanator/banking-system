@@ -8,7 +8,7 @@ class Database:
     def __init__(self):
         self.host = 'localhost'
         self.user = 'root'
-        self.password = 'password'  # Change this to your MySQL password
+        self.password = '123'  
         self.database = 'banking_system'
     
     def get_connection(self):

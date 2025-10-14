@@ -15,7 +15,7 @@ def setup_database():
     config = {
         'host': 'localhost',
         'user': 'root',
-        'password': 'password',  # Change this to your MySQL password
+        'password': '123',  # Change this to your MySQL password
     }
     
     try:
