@@ -95,7 +95,7 @@
                                                 <option value="">Select your account...</option>
                                                 {% for account in accounts %}
                                                 <option value="{{ account.account_id }}" data-balance="{{ account.balance }}">
-                                                    {{ account.account_type.title() }} - ****{{ account.account_number[-4:] }} (Balance: ${{ "%.2f"|format(account.balance) }})
+                                                    {{ account.account_type.title() }} - ****{{ account.account_number[-4:] }} (Balance: Rs {{ "%.2f"|format(account.balance) }})
                                                 </option>
                                                 {% endfor %}
                                             </select>
@@ -109,11 +109,11 @@
                                         <div class="mb-3">
                                             <label for="amount" class="form-label">Amount</label>
                                             <div class="input-group">
-                                                <span class="input-group-text">$</span>
+                                                <span class="input-group-text">Rs</span>
                                                 <input type="number" class="form-control" id="amount" name="amount" 
                                                        step="0.01" min="0.01" required>
                                             </div>
-                                            <div class="form-text">Available balance: <span id="available-balance">$0.00</span></div>
+                                            <div class="form-text">Available balance: <span id="available-balance">Rs 0.00</span></div>
                                         </div>
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Description (Optional)</label>
@@ -150,7 +150,7 @@
                                         </li>
                                         <li class="mb-2">
                                             <i class="fas fa-limit me-2"></i>
-                                            <strong>Daily Limit:</strong> $10,000
+                                            <strong>Daily Limit:</strong> Rs 10,000
                                         </li>
                                     </ul>
                                 </div>
@@ -179,7 +179,7 @@
         document.getElementById('from_account_id').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const balance = selectedOption.getAttribute('data-balance');
-            document.getElementById('available-balance').textContent = '$' + parseFloat(balance).toFixed(2);
+            document.getElementById('available-balance').textContent = 'Rs ' + parseFloat(balance).toFixed(2);
         });
 
         // Form validation
@@ -204,7 +204,7 @@
 
             if (amount > 10000) {
                 e.preventDefault();
-                alert('Amount exceeds daily limit of $10,000!');
+                alert('Amount exceeds daily limit of Rs 10,000!');
                 return;
             }
         });

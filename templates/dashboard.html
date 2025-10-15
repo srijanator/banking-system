@@ -93,8 +93,8 @@
                         <div class="col-md-3 mb-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
-                                    <h5 class="card-title">${{ "%.2f"|format(accounts|sum(attribute='balance')) }}</h5>
+                                    <i class="fas fa-rupee-sign fa-2x text-success mb-2"></i>
+                                    <h5 class="card-title">Rs {{ "%.2f"|format(accounts|sum(attribute='balance')) }}</h5>
                                     <p class="card-text text-muted">Total Balance</p>
                                 </div>
                             </div>
@@ -140,7 +140,7 @@
                                                                 <p class="card-text mb-0">{{ account.branch_name }}</p>
                                                             </div>
                                                             <div class="text-end">
-                                                                <h4 class="mb-0">${{ "%.2f"|format(account.balance) }}</h4>
+                                                                <h4 class="mb-0">Rs {{ "%.2f"|format(account.balance) }}</h4>
                                                                 <small class="text-white-50">{{ account.status.title() }}</small>
                                                             </div>
                                                         </div>

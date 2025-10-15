@@ -80,11 +80,15 @@ class BankAccount:
             try:
                 cursor = connection.cursor()
                 account_number = self.generate_account_number()
+                
+                # Set interest rate based on account type
+                interest_rate = 5.5 if account_type == 'savings' else 0.0
+                
                 query = """
-                INSERT INTO accounts (user_id, branch_id, account_number, account_type)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO accounts (user_id, branch_id, account_number, account_type, interest)
+                VALUES (%s, %s, %s, %s, %s)
                 """
-                cursor.execute(query, (user_id, branch_id, account_number, account_type))
+                cursor.execute(query, (user_id, branch_id, account_number, account_type, interest_rate))
                 connection.commit()
                 return account_number
             except Error as e:
