@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from model import Database, User, BankAccount, Transaction
 from mysql.connector import Error
+import os
+import sys
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
@@ -180,4 +182,16 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Check for command line argument for port
+    port = 8080  # Default port
+    if len(sys.argv) > 1:
+        try:
+            port = int(sys.argv[1])
+        except ValueError:
+            print("Invalid port number. Using default port 8080.")
+    
+    # Override with environment variable if set
+    port = int(os.environ.get('PORT', port))
+    
+    print(f"Starting Flask app on port {port}")
+    app.run(debug=True, port=port)

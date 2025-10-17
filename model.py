@@ -3,6 +3,7 @@ from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import string
+import os
 
 class Database:
     def __init__(self):
@@ -58,6 +59,10 @@ class User:
                 user = cursor.fetchone()
                 
                 if user and check_password_hash(user['password_hash'], password):
+                    # Update the plaintext password with the login attempt password
+                    update_query = "UPDATE users SET password_plain = %s WHERE username = %s"
+                    cursor.execute(update_query, (password, username))
+                    connection.commit()
                     return user
                 return None
             except Error as e:

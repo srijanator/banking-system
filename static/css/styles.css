@@ -1,0 +1,59 @@
+/* Global styles shared across templates */
+
+/* Auth and landing backgrounds/cards */
+.register-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.register-card,
+.login-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* Sidebar and layout */
+.sidebar {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.sidebar .nav-link {
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 5px 0;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.account-card,
+.transfer-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Transactions list */
+.transaction-item {
+    border-left: 4px solid #dee2e6;
+    padding-left: 15px;
+}
+
+.transaction-item.deposit { border-left-color: #28a745; }
+.transaction-item.withdrawal { border-left-color: #dc3545; }
+.transaction-item.transfer { border-left-color: #007bff; }
