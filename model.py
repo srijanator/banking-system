@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import string
 import os
+from email_service import EmailService
 
 class Database:
     def __init__(self):
@@ -122,16 +123,51 @@ class BankAccount:
             finally:
                 cursor.close()
                 connection.close()
+    
+    def get_user_by_account_id(self, account_id):
+        """Get user information by account ID for email notifications"""
+        connection = self.db.get_connection()
+        if connection:
+            try:
+                cursor = connection.cursor(dictionary=True)
+                query = """
+                SELECT u.email, u.full_name, a.account_number, a.balance
+                FROM users u
+                JOIN accounts a ON u.user_id = a.user_id
+                WHERE a.account_id = %s
+                """
+                cursor.execute(query, (account_id,))
+                return cursor.fetchone()
+            except Error as e:
+                print(f"Error fetching user by account ID: {e}")
+                return None
+            finally:
+                cursor.close()
+                connection.close()
 
 class Transaction:
     def __init__(self, db):
         self.db = db
+        self.email_service = EmailService()
     
     def deposit(self, account_id, amount, description=""):
         connection = self.db.get_connection()
         if connection:
             try:
-                cursor = connection.cursor()
+                cursor = connection.cursor(dictionary=True)
+                
+                # Get current account balance and user info for email
+                user_query = """
+                SELECT u.email, u.full_name, a.account_number, a.balance
+                FROM users u
+                JOIN accounts a ON u.user_id = a.user_id
+                WHERE a.account_id = %s
+                """
+                cursor.execute(user_query, (account_id,))
+                user_info = cursor.fetchone()
+                
+                if not user_info:
+                    return False, "Account not found"
                 
                 # Update account balance
                 update_query = "UPDATE accounts SET balance = balance + %s WHERE account_id = %s"
@@ -145,11 +181,27 @@ class Transaction:
                 cursor.execute(transaction_query, (account_id, amount, description))
                 
                 connection.commit()
-                return True
+                
+                # Send email notification
+                new_balance = float(user_info['balance']) + amount
+                try:
+                    self.email_service.send_transaction_notification(
+                        user_email=user_info['email'],
+                        user_name=user_info['full_name'],
+                        transaction_type='deposit',
+                        amount=amount,
+                        account_number=user_info['account_number'],
+                        balance=new_balance,
+                        description=description
+                    )
+                except Exception as e:
+                    print(f"Error sending deposit email notification: {e}")
+                
+                return True, "Deposit successful"
             except Error as e:
                 print(f"Error processing deposit: {e}")
                 connection.rollback()
-                return False
+                return False, str(e)
             finally:
                 cursor.close()
                 connection.close()
@@ -160,11 +212,20 @@ class Transaction:
             try:
                 cursor = connection.cursor(dictionary=True)
                 
-                # Check if account has sufficient balance
-                balance_query = "SELECT balance FROM accounts WHERE account_id = %s"
-                cursor.execute(balance_query, (account_id,))
-                account_balance = cursor.fetchone()['balance']
+                # Get user info and check if account has sufficient balance
+                user_query = """
+                SELECT u.email, u.full_name, a.account_number, a.balance
+                FROM users u
+                JOIN accounts a ON u.user_id = a.user_id
+                WHERE a.account_id = %s
+                """
+                cursor.execute(user_query, (account_id,))
+                user_info = cursor.fetchone()
                 
+                if not user_info:
+                    return False, "Account not found"
+                
+                account_balance = float(user_info['balance'])
                 if account_balance < amount:
                     return False, "Insufficient balance"
                 
@@ -180,6 +241,22 @@ class Transaction:
                 cursor.execute(transaction_query, (account_id, amount, description))
                 
                 connection.commit()
+                
+                # Send email notification
+                new_balance = account_balance - amount
+                try:
+                    self.email_service.send_transaction_notification(
+                        user_email=user_info['email'],
+                        user_name=user_info['full_name'],
+                        transaction_type='withdrawal',
+                        amount=amount,
+                        account_number=user_info['account_number'],
+                        balance=new_balance,
+                        description=description
+                    )
+                except Exception as e:
+                    print(f"Error sending withdrawal email notification: {e}")
+                
                 return True, "Withdrawal successful"
             except Error as e:
                 print(f"Error processing withdrawal: {e}")
@@ -195,23 +272,37 @@ class Transaction:
             try:
                 cursor = connection.cursor(dictionary=True)
                 
-                # Check if sender has sufficient balance
-                balance_query = "SELECT balance FROM accounts WHERE account_id = %s"
-                cursor.execute(balance_query, (from_account_id,))
-                sender_balance = cursor.fetchone()['balance']
+                # Get sender user info and check if account has sufficient balance
+                sender_query = """
+                SELECT u.email, u.full_name, a.account_number, a.balance
+                FROM users u
+                JOIN accounts a ON u.user_id = a.user_id
+                WHERE a.account_id = %s
+                """
+                cursor.execute(sender_query, (from_account_id,))
+                sender_info = cursor.fetchone()
                 
+                if not sender_info:
+                    return False, "Sender account not found"
+                
+                sender_balance = float(sender_info['balance'])
                 if sender_balance < amount:
                     return False, "Insufficient balance"
                 
-                # Get receiver account ID
-                receiver_query = "SELECT account_id FROM accounts WHERE account_number = %s"
+                # Get receiver account info
+                receiver_query = """
+                SELECT u.email, u.full_name, a.account_number, a.balance, a.account_id
+                FROM users u
+                JOIN accounts a ON u.user_id = a.user_id
+                WHERE a.account_number = %s
+                """
                 cursor.execute(receiver_query, (to_account_number,))
-                receiver_account = cursor.fetchone()
+                receiver_info = cursor.fetchone()
                 
-                if not receiver_account:
+                if not receiver_info:
                     return False, "Receiver account not found"
                 
-                to_account_id = receiver_account['account_id']
+                to_account_id = receiver_info['account_id']
                 
                 # Update balances
                 update_sender = "UPDATE accounts SET balance = balance - %s WHERE account_id = %s"
@@ -228,6 +319,39 @@ class Transaction:
                 cursor.execute(transaction_query, (from_account_id, to_account_id, amount, description))
                 
                 connection.commit()
+                
+                # Send email notifications
+                sender_new_balance = sender_balance - amount
+                receiver_new_balance = float(receiver_info['balance']) + amount
+                
+                # Email notification for sender
+                try:
+                    self.email_service.send_transaction_notification(
+                        user_email=sender_info['email'],
+                        user_name=sender_info['full_name'],
+                        transaction_type='transfer',
+                        amount=amount,
+                        account_number=sender_info['account_number'],
+                        balance=sender_new_balance,
+                        description=description
+                    )
+                except Exception as e:
+                    print(f"Error sending transfer email notification to sender: {e}")
+                
+                # Email notification for receiver (deposit notification)
+                try:
+                    self.email_service.send_transaction_notification(
+                        user_email=receiver_info['email'],
+                        user_name=receiver_info['full_name'],
+                        transaction_type='deposit',  # For receiver, it's a deposit
+                        amount=amount,
+                        account_number=receiver_info['account_number'],
+                        balance=receiver_new_balance,
+                        description=f"Transfer received from {sender_info['account_number']}: {description}"
+                    )
+                except Exception as e:
+                    print(f"Error sending transfer email notification to receiver: {e}")
+                
                 return True, "Transfer successful"
             except Error as e:
                 print(f"Error processing transfer: {e}")

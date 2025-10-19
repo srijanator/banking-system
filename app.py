@@ -80,11 +80,11 @@ def deposit():
     amount = float(request.form['amount'])
     description = request.form.get('description', '')
     
-    success = transaction_model.deposit(account_id, amount, description)
+    success, message = transaction_model.deposit(account_id, amount, description)
     if success:
         flash('Deposit successful!', 'success')
     else:
-        flash('Deposit failed. Please try again.', 'error')
+        flash(f'Deposit failed: {message}', 'error')
     
     return redirect(url_for('accounts'))
 
