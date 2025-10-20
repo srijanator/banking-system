@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from model import Database, User, BankAccount, Transaction
 from mysql.connector import Error
+import os
+import sys
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
@@ -78,11 +80,11 @@ def deposit():
     amount = float(request.form['amount'])
     description = request.form.get('description', '')
     
-    success = transaction_model.deposit(account_id, amount, description)
+    success, message = transaction_model.deposit(account_id, amount, description)
     if success:
         flash('Deposit successful!', 'success')
     else:
-        flash('Deposit failed. Please try again.', 'error')
+        flash(f'Deposit failed: {message}', 'error')
     
     return redirect(url_for('accounts'))
 
@@ -180,4 +182,16 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Check for command line argument for port
+    port = 8080  # Default port
+    if len(sys.argv) > 1:
+        try:
+            port = int(sys.argv[1])
+        except ValueError:
+            print("Invalid port number. Using default port 8080.")
+    
+    # Override with environment variable if set
+    port = int(os.environ.get('PORT', port))
+    
+    print(f"Starting Flask app on port {port}")
+    app.run(debug=True, port=port)
