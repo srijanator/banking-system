@@ -15,8 +15,8 @@ class EmailService:
         """Send email notification for banking transactions"""
         
         # Format amount and balance
-        formatted_amount = f"${amount:,.2f}"
-        formatted_balance = f"${balance:,.2f}"
+        formatted_amount = f"₹{amount:,.2f}"
+        formatted_balance = f"₹{balance:,.2f}"
         
         # Create subject based on transaction type
         subjects = {
@@ -49,6 +49,8 @@ class EmailService:
                 'HTMLPart': html_content
             }]
         }
+
+        #try cath for debuggings
         
         try:
             response = requests.post(
