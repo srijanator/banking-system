@@ -194,6 +194,94 @@
     padding: 10px;
 }
 
+/* Mobile Sidebar Text and Links - Force White Color */
+.mobile-sidebar h4,
+.mobile-sidebar h5,
+.mobile-sidebar p,
+.mobile-sidebar span {
+    color: white !important;
+}
+
+.mobile-sidebar .text-white {
+    color: white !important;
+}
+
+.mobile-sidebar .text-white-50 {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Mobile Sidebar Navigation Links */
+.mobile-sidebar .nav-link {
+    color: white !important;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+}
+
+.mobile-sidebar .nav-link:hover {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.mobile-sidebar .nav-link.active {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-sidebar .nav-link i {
+    color: white !important;
+}
+
+/* Mobile Action Buttons Styling */
+.action-btn {
+    padding: 8px 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.action-btn i {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1.1rem;
+}
+
+.action-btn span {
+    display: block;
+    font-size: 0.75rem;
+    white-space: normal;
+}
+
+/* Mobile view - show text, hide icons on small screens */
+@media (max-width: 576px) {
+    .action-btn {
+        padding: 10px 4px;
+        font-size: 0.8rem;
+    }
+
+    .action-btn i {
+        display: none;
+    }
+
+    .action-btn span {
+        display: block;
+        font-size: 0.8rem;
+    }
+
+    .btn-light {
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+    }
+
+    .btn-outline-light {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+    }
+}
+
 /* Cards */
 .card {
     border: none;
