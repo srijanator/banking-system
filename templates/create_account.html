@@ -3,40 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Banking System</title>
+    <title>Create Account - SecureBank</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .sidebar .nav-link {
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin: 5px 0;
-            transition: all 0.3s;
-        }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+    <!-- Mobile Navigation Bar -->
+    <nav class="mobile-nav navbar">
+        <button class="navbar-toggler" type="button" onclick="toggleMobileSidebar()">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand">🏦 SecureBank</span>
+    </nav>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="mobile-sidebar-overlay" id="mobileOverlay" onclick="toggleMobileSidebar()"></div>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <div>
+                <h4 class="text-white mb-0">🏦 SecureBank</h4>
+                <p class="text-white-50 small mb-0">{{ session.full_name }}</p>
+            </div>
+            <button class="close-sidebar" onclick="toggleMobileSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="nav flex-column p-3">
+            <a class="nav-link" href="{{ url_for('dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+            <a class="nav-link" href="{{ url_for('accounts') }}">
+                <i class="fas fa-credit-card me-2"></i>My Accounts
+            </a>
+            <a class="nav-link" href="{{ url_for('transfer') }}">
+                <i class="fas fa-exchange-alt me-2"></i>Transfer Money
+            </a>
+            <a class="nav-link active" href="{{ url_for('create_account') }}">
+                <i class="fas fa-plus me-2"></i>Open Account
+            </a>
+            <a class="nav-link" href="{{ url_for('logout') }}">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </nav>
+    </div>
+
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
+            <!-- Desktop Sidebar -->
             <div class="col-md-3 col-lg-2 px-0">
                 <div class="sidebar">
                     <div class="p-3">
-                        <h4 class="text-white">🏦 Banking</h4>
+                        <h4 class="text-white">🏦 SecureBank</h4>
                         <p class="text-white-50 mb-0">Welcome, {{ session.full_name }}</p>
                     </div>
                     <nav class="nav flex-column p-3">
@@ -49,6 +69,9 @@
                         <a class="nav-link" href="{{ url_for('transfer') }}">
                             <i class="fas fa-exchange-alt me-2"></i>Transfer Money
                         </a>
+                        <a class="nav-link active" href="{{ url_for('create_account') }}">
+                            <i class="fas fa-plus me-2"></i>Open Account
+                        </a>
                         <a class="nav-link" href="{{ url_for('logout') }}">
                             <i class="fas fa-sign-out-alt me-2"></i>Logout
                         </a>
@@ -59,17 +82,56 @@
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10">
                 <div class="p-4">
+                    <!-- Header Section -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Create New Account</h2>
+                        <div>
+                            <h2 class="mb-1">
+                                <i class="fas fa-plus-circle me-2 text-primary"></i>Open New Account
+                            </h2>
+                            <p class="text-muted mb-0">Start your banking journey with us today</p>
+                        </div>
                         <a href="{{ url_for('accounts') }}" class="btn btn-outline-primary">
                             <i class="fas fa-arrow-left me-2"></i>Back to Accounts
                         </a>
                     </div>
 
+                    <!-- Progress Indicator -->
+                    <div class="progress-container mb-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Account Opening Progress</span>
+                                    <span class="badge bg-primary" id="progress-percentage">0%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-gradient" role="progressbar" style="width: 0%" id="form-progress"></div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-4 text-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user-circle" id="step1-icon"></i> Details
+                                        </small>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-building" id="step2-icon"></i> Branch
+                                        </small>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-check-circle" id="step3-icon"></i> Complete
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
-                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show animate-fade-in" role="alert">
+                                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
@@ -78,64 +140,249 @@
                     {% endwith %}
 
                     <div class="row">
+                        <!-- Main Form Column -->
                         <div class="col-lg-8">
-                            <div class="card">
+                            <div class="card shadow-sm animate-fade-in">
                                 <div class="card-header">
-                                    <h5 class="mb-0">Account Details</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-clipboard-list me-2 text-primary"></i>Account Application
+                                    </h5>
                                 </div>
                                 <div class="card-body">
-                                    <form method="POST">
-                                        <div class="mb-3">
-                                            <label for="account_type" class="form-label">Account Type</label>
-                                            <select class="form-select" id="account_type" name="account_type" required>
-                                                <option value="">Select account type...</option>
-                                                <option value="savings">Savings Account</option>
-                                                <option value="current">Current Account</option>
+                                    <form method="POST" id="accountForm" novalidate>
+                                        <!-- Account Type Selection -->
+                                        <div class="mb-4">
+                                            <label for="account_type" class="form-label fw-bold">
+                                                <i class="fas fa-tags me-2 text-primary"></i>Account Type
+                                            </label>
+                                            <select class="form-select form-select-lg" id="account_type" name="account_type" required>
+                                                <option value="">Choose your account type...</option>
+                                                <option value="savings" data-interest="2.5" data-min-balance="100">
+                                                    💰 Savings Account - Earn interest on your deposits
+                                                </option>
+                                                <option value="current" data-interest="0" data-min-balance="0">
+                                                    🏢 Current Account - Perfect for business transactions
+                                                </option>
                                             </select>
-                                            <div class="form-text">
-                                                <strong>Savings Account:</strong> Earn interest on your balance<br>
-                                                <strong>Current Account:</strong> For daily transactions
+                                            <div class="invalid-feedback">
+                                                Please select an account type.
                                             </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label for="branch_id" class="form-label">Branch</label>
-                                            <select class="form-select" id="branch_id" name="branch_id" required>
-                                                <option value="">Select branch...</option>
+
+                                        <!-- Account Type Details Card -->
+                                        <div class="account-type-details mb-4" id="accountTypeDetails" style="display: none;">
+                                            <div class="card border-primary">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-2 text-center">
+                                                            <i class="account-type-icon fa-3x text-primary mb-2"></i>
+                                                        </div>
+                                                        <div class="col-md-10">
+                                                            <h6 class="account-type-title mb-2"></h6>
+                                                            <div class="account-type-benefits"></div>
+                                                            <div class="row mt-3">
+                                                                <div class="col-6">
+                                                                    <div class="feature-box">
+                                                                        <i class="fas fa-percentage text-success"></i>
+                                                                        <span class="ms-2">Interest: <span class="interest-rate fw-bold">0%</span></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <div class="feature-box">
+                                                                        <i class="fas fa-wallet text-info"></i>
+                                                                        <span class="ms-2">Min Balance: Rs <span class="min-balance fw-bold">0</span></span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Branch Selection -->
+                                        <div class="mb-4">
+                                            <label for="branch_id" class="form-label fw-bold">
+                                                <i class="fas fa-building me-2 text-primary"></i>Select Branch
+                                            </label>
+                                            <select class="form-select form-select-lg" id="branch_id" name="branch_id" required>
+                                                <option value="">Choose your preferred branch...</option>
                                                 {% for branch in branches %}
-                                                <option value="{{ branch.branch_id }}">{{ branch.branch_name }} - {{ branch.branch_code }}</option>
+                                                <option value="{{ branch.branch_id }}" 
+                                                        data-name="{{ branch.branch_name }}" 
+                                                        data-code="{{ branch.branch_code }}">
+                                                    🏦 {{ branch.branch_name }} ({{ branch.branch_code }})
+                                                </option>
                                                 {% endfor %}
                                             </select>
+                                            <div class="invalid-feedback">
+                                                Please select a branch.
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                You can visit any of our branches for account services
+                                            </div>
                                         </div>
+
+                                        <!-- Initial Deposit (Optional) -->
+                                        <div class="mb-4">
+                                            <label for="initial_deposit" class="form-label fw-bold">
+                                                <i class="fas fa-coins me-2 text-primary"></i>Initial Deposit (Optional)
+                                            </label>
+                                            <div class="input-group input-group-lg">
+                                                <span class="input-group-text">Rs</span>
+                                                <input type="number" class="form-control" id="initial_deposit" 
+                                                       name="initial_deposit" min="0" step="0.01" 
+                                                       placeholder="0.00">
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="fas fa-lightbulb me-1"></i>
+                                                Start building your savings immediately with an initial deposit
+                                            </div>
+                                            <div id="deposit-summary" class="mt-2" style="display: none;">
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Deposit Summary:</strong> Rs <span id="deposit-amount">0.00</span> will be deposited to your new account immediately after creation.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Terms and Conditions -->
+                                        <div class="mb-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                                <label class="form-check-label" for="terms">
+                                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a> 
+                                                    and <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>
+                                                </label>
+                                                <div class="invalid-feedback">
+                                                    You must agree to the terms and conditions.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Submit Button -->
                                         <div class="d-grid">
-                                            <button type="submit" class="btn btn-primary btn-lg">
-                                                <i class="fas fa-plus me-2"></i>Create Account
+                                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                                                <i class="fas fa-rocket me-2"></i>Open My Account
                                             </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Information Sidebar -->
                         <div class="col-lg-4">
-                            <div class="card">
+                            <!-- Account Comparison -->
+                            <div class="card mb-4 animate-fade-in">
                                 <div class="card-header">
-                                    <h6 class="mb-0">Account Information</h6>
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-balance-scale me-2 text-info"></i>Account Comparison
+                                    </h6>
                                 </div>
                                 <div class="card-body">
-                                    <h6>Savings Account</h6>
-                                    <ul class="list-unstyled small text-muted">
-                                        <li>• Interest rate: 2.5% per annum</li>
-                                        <li>• Minimum balance: Rs 100</li>
-                                        <li>• Free online banking</li>
-                                        <li>• Monthly statements</li>
-                                    </ul>
-                                    
-                                    <h6 class="mt-3">Current Account</h6>
-                                    <ul class="list-unstyled small text-muted">
-                                        <li>• No interest on balance</li>
-                                        <li>• No minimum balance</li>
-                                        <li>• Unlimited transactions</li>
-                                        <li>• Check book facility</li>
-                                    </ul>
+                                    <div class="comparison-table">
+                                        <div class="row mb-3">
+                                            <div class="col-4"><strong>Feature</strong></div>
+                                            <div class="col-4 text-center"><strong>Savings</strong></div>
+                                            <div class="col-4 text-center"><strong>Current</strong></div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4 small">Interest</div>
+                                            <div class="col-4 text-center">
+                                                <span class="badge bg-success">2.5%</span>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <span class="badge bg-secondary">0%</span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4 small">Min Balance</div>
+                                            <div class="col-4 text-center">
+                                                <span class="text-warning">Rs 100</span>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <span class="text-success">Rs 0</span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4 small">Transactions</div>
+                                            <div class="col-4 text-center">
+                                                <i class="fas fa-check text-success"></i>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <i class="fas fa-infinity text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4 small">Check Book</div>
+                                            <div class="col-4 text-center">
+                                                <i class="fas fa-times text-danger"></i>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <i class="fas fa-check text-success"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Benefits Card -->
+                            <div class="card mb-4 animate-fade-in">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-gift me-2 text-success"></i>Account Benefits
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="benefit-item mb-3">
+                                        <i class="fas fa-shield-alt text-success me-2"></i>
+                                        <span class="small">FDIC Insured up to Rs 5,00,000</span>
+                                    </div>
+                                    <div class="benefit-item mb-3">
+                                        <i class="fas fa-mobile-alt text-primary me-2"></i>
+                                        <span class="small">Free mobile banking app</span>
+                                    </div>
+                                    <div class="benefit-item mb-3">
+                                        <i class="fas fa-credit-card text-info me-2"></i>
+                                        <span class="small">Complimentary debit card</span>
+                                    </div>
+                                    <div class="benefit-item mb-3">
+                                        <i class="fas fa-headset text-warning me-2"></i>
+                                        <span class="small">24/7 customer support</span>
+                                    </div>
+                                    <div class="benefit-item mb-3">
+                                        <i class="fas fa-globe text-success me-2"></i>
+                                        <span class="small">Online banking access</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Features -->
+                            <div class="card animate-fade-in">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-lock me-2 text-danger"></i>Security Features
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="security-item mb-2">
+                                        <i class="fas fa-key text-primary me-2"></i>
+                                        <span class="small">Two-factor authentication</span>
+                                    </div>
+                                    <div class="security-item mb-2">
+                                        <i class="fas fa-encrypt text-success me-2"></i>
+                                        <span class="small">256-bit SSL encryption</span>
+                                    </div>
+                                    <div class="security-item mb-2">
+                                        <i class="fas fa-eye text-info me-2"></i>
+                                        <span class="small">Real-time fraud monitoring</span>
+                                    </div>
+                                    <div class="security-item">
+                                        <i class="fas fa-bell text-warning me-2"></i>
+                                        <span class="small">Instant transaction alerts</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -145,6 +392,449 @@
         </div>
     </div>
 
+    <!-- Terms and Conditions Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-contract me-2"></i>Terms and Conditions
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="terms-content">
+                        <h6>1. Account Opening</h6>
+                        <p class="small text-muted mb-3">
+                            By opening an account with SecureBank, you agree to maintain accurate information and comply with all banking regulations.
+                        </p>
+                        
+                        <h6>2. Account Usage</h6>
+                        <p class="small text-muted mb-3">
+                            Your account should be used for legitimate banking purposes only. Any suspicious activity will be reported to appropriate authorities.
+                        </p>
+                        
+                        <h6>3. Fees and Charges</h6>
+                        <p class="small text-muted mb-3">
+                            Account maintenance fees, if applicable, will be clearly communicated. Transaction fees may apply for certain services.
+                        </p>
+                        
+                        <h6>4. Privacy and Security</h6>
+                        <p class="small text-muted mb-3">
+                            We protect your personal information with industry-standard encryption and security measures. Never share your login credentials.
+                        </p>
+                        
+                        <h6>5. Account Closure</h6>
+                        <p class="small text-muted mb-0">
+                            Either party may close the account with appropriate notice. Outstanding balances must be settled before closure.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="acceptTerms()">
+                        <i class="fas fa-check me-2"></i>I Accept
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal fade" id="privacyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shield-alt me-2"></i>Privacy Policy
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="privacy-content">
+                        <h6>Information Collection</h6>
+                        <p class="small text-muted mb-3">
+                            We collect personal information necessary for account opening and banking services, including name, address, and identification details.
+                        </p>
+                        
+                        <h6>Information Usage</h6>
+                        <p class="small text-muted mb-3">
+                            Your information is used to provide banking services, comply with regulations, and enhance your banking experience.
+                        </p>
+                        
+                        <h6>Information Sharing</h6>
+                        <p class="small text-muted mb-3">
+                            We do not sell your personal information. Data may be shared with regulatory authorities when required by law.
+                        </p>
+                        
+                        <h6>Data Security</h6>
+                        <p class="small text-muted mb-0">
+                            We employ advanced security measures including encryption, firewalls, and monitoring systems to protect your data.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="acceptPrivacy()">
+                        <i class="fas fa-check me-2"></i>Understood
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Enhanced Create Account Page JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCreateAccountPage();
+            initializeFormValidation();
+            initializeProgressTracking();
+            initializeAccountTypeDetails();
+            addAnimations();
+        });
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        function initializeCreateAccountPage() {
+            // Animate elements on page load
+            const elements = document.querySelectorAll('.animate-fade-in');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease-out';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        }
+
+        function initializeFormValidation() {
+            const form = document.getElementById('accountForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const accountTypeSelect = document.getElementById('account_type');
+            const branchSelect = document.getElementById('branch_id');
+            const termsCheckbox = document.getElementById('terms');
+            const initialDepositInput = document.getElementById('initial_deposit');
+
+            // Real-time validation
+            [accountTypeSelect, branchSelect, termsCheckbox].forEach(element => {
+                element.addEventListener('change', validateForm);
+            });
+
+            initialDepositInput.addEventListener('input', function() {
+                const amount = parseFloat(this.value);
+                const depositSummary = document.getElementById('deposit-summary');
+                const depositAmountSpan = document.getElementById('deposit-amount');
+                
+                this.classList.remove('is-valid', 'is-invalid');
+                
+                // Remove existing feedback
+                const existingFeedback = this.parentElement.querySelector('.invalid-feedback, .valid-feedback');
+                if (existingFeedback) {
+                    existingFeedback.remove();
+                }
+                
+                if (this.value === '' || this.value === '0' || amount === 0) {
+                    // Empty or zero - hide summary
+                    depositSummary.style.display = 'none';
+                    return;
+                } else if (isNaN(amount) || amount < 0) {
+                    this.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = 'Please enter a valid amount (minimum Rs 0)';
+                    this.parentElement.appendChild(feedback);
+                    depositSummary.style.display = 'none';
+                } else if (amount > 0) {
+                    this.classList.add('is-valid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'valid-feedback';
+                    feedback.textContent = `✓ Valid initial deposit amount`;
+                    this.parentElement.appendChild(feedback);
+                    
+                    // Show and update summary
+                    depositAmountSpan.textContent = amount.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    depositSummary.style.display = 'block';
+                    
+                    // Add animation
+                    depositSummary.style.opacity = '0';
+                    depositSummary.style.transform = 'translateY(-10px)';
+                    setTimeout(() => {
+                        depositSummary.style.transition = 'all 0.3s ease';
+                        depositSummary.style.opacity = '1';
+                        depositSummary.style.transform = 'translateY(0)';
+                    }, 100);
+                }
+                
+                // Update progress if amount is valid
+                updateProgress();
+            });
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                // Don't prevent default if form is valid
+                if (!validateForm()) {
+                    e.preventDefault();
+                    showInvalidFields();
+                    return false;
+                }
+                
+                // If form is valid, let it submit normally but show loading state
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
+                submitBtn.disabled = true;
+                
+                // Let the form submit normally
+                return true;
+            });
+        }
+
+        function validateForm() {
+            const accountType = document.getElementById('account_type').value;
+            const branch = document.getElementById('branch_id').value;
+            const terms = document.getElementById('terms').checked;
+            const submitBtn = document.getElementById('submitBtn');
+
+            const isValid = accountType && branch && terms;
+            
+            submitBtn.disabled = !isValid;
+            
+            if (isValid) {
+                submitBtn.classList.remove('btn-secondary');
+                submitBtn.classList.add('btn-primary');
+            } else {
+                submitBtn.classList.remove('btn-primary');
+                submitBtn.classList.add('btn-secondary');
+            }
+
+            return isValid;
+        }
+
+        function showInvalidFields() {
+            const fields = ['account_type', 'branch_id'];
+            
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    field.classList.add('is-invalid');
+                    
+                    // Remove invalid class after user interacts
+                    field.addEventListener('change', function() {
+                        this.classList.remove('is-invalid');
+                        if (this.value) {
+                            this.classList.add('is-valid');
+                        }
+                    }, { once: true });
+                }
+            });
+
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                terms.classList.add('is-invalid');
+                terms.addEventListener('change', function() {
+                    this.classList.remove('is-invalid');
+                }, { once: true });
+            }
+        }
+
+        function initializeProgressTracking() {
+            const accountTypeSelect = document.getElementById('account_type');
+            const branchSelect = document.getElementById('branch_id');
+            const termsCheckbox = document.getElementById('terms');
+
+            accountTypeSelect.addEventListener('change', updateProgress);
+            branchSelect.addEventListener('change', updateProgress);
+            termsCheckbox.addEventListener('change', updateProgress);
+        }
+
+        function updateProgress() {
+            const accountType = document.getElementById('account_type').value;
+            const branch = document.getElementById('branch_id').value;
+            const terms = document.getElementById('terms').checked;
+
+            let progress = 0;
+            
+            if (accountType) {
+                progress += 40;
+                document.getElementById('step1-icon').className = 'fas fa-check-circle text-success';
+            }
+            
+            if (branch) {
+                progress += 40;
+                document.getElementById('step2-icon').className = 'fas fa-check-circle text-success';
+            }
+            
+            if (terms) {
+                progress += 20;
+                document.getElementById('step3-icon').className = 'fas fa-check-circle text-success';
+            }
+
+            const progressBar = document.getElementById('form-progress');
+            const progressPercentage = document.getElementById('progress-percentage');
+            
+            progressBar.style.width = progress + '%';
+            progressPercentage.textContent = progress + '%';
+
+            // Change progress bar color based on completion
+            progressBar.className = 'progress-bar ' + 
+                (progress === 100 ? 'bg-success' : 
+                 progress >= 60 ? 'bg-primary' : 'bg-info');
+        }
+
+        function initializeAccountTypeDetails() {
+            const accountTypeSelect = document.getElementById('account_type');
+            const detailsCard = document.getElementById('accountTypeDetails');
+
+            accountTypeSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                
+                if (this.value) {
+                    showAccountTypeDetails(this.value, selectedOption);
+                } else {
+                    detailsCard.style.display = 'none';
+                }
+            });
+        }
+
+        function showAccountTypeDetails(accountType, option) {
+            const detailsCard = document.getElementById('accountTypeDetails');
+            const icon = detailsCard.querySelector('.account-type-icon');
+            const title = detailsCard.querySelector('.account-type-title');
+            const benefits = detailsCard.querySelector('.account-type-benefits');
+            const interestRate = detailsCard.querySelector('.interest-rate');
+            const minBalance = detailsCard.querySelector('.min-balance');
+
+            const accountData = {
+                savings: {
+                    icon: 'fas fa-piggy-bank',
+                    title: 'Savings Account',
+                    benefits: `
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-success">✓ Earn Interest</small><br>
+                                <small class="text-success">✓ Online Banking</small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-success">✓ Mobile App</small><br>
+                                <small class="text-success">✓ Debit Card</small>
+                            </div>
+                        </div>
+                    `
+                },
+                current: {
+                    icon: 'fas fa-briefcase',
+                    title: 'Current Account',
+                    benefits: `
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-success">✓ Unlimited Transactions</small><br>
+                                <small class="text-success">✓ Check Book</small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-success">✓ Online Banking</small><br>
+                                <small class="text-success">✓ Business Features</small>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+
+            const data = accountData[accountType];
+            const interest = option.getAttribute('data-interest');
+            const minBal = option.getAttribute('data-min-balance');
+
+            icon.className = data.icon + ' fa-3x text-primary mb-2';
+            title.textContent = data.title;
+            benefits.innerHTML = data.benefits;
+            interestRate.textContent = interest + '% p.a.';
+            minBalance.textContent = minBal;
+
+            // Animate the details card
+            detailsCard.style.display = 'block';
+            detailsCard.style.opacity = '0';
+            detailsCard.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                detailsCard.style.transition = 'all 0.4s ease-out';
+                detailsCard.style.opacity = '1';
+                detailsCard.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        function addAnimations() {
+            // Add hover effects to benefit items
+            const benefitItems = document.querySelectorAll('.benefit-item, .security-item');
+            benefitItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                    this.style.background = 'rgba(102, 126, 234, 0.05)';
+                    this.style.borderRadius = '8px';
+                    this.style.padding = '8px';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                    this.style.background = 'transparent';
+                    this.style.padding = '0';
+                });
+            });
+        }
+
+        function submitAccount() {
+            // This function is no longer needed since we handle submission in the event listener
+            // Keeping it for backward compatibility
+            const form = document.getElementById('accountForm');
+            form.submit();
+        }
+
+        function acceptTerms() {
+            document.getElementById('terms').checked = true;
+            validateForm();
+            updateProgress();
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('termsModal'));
+            modal.hide();
+            
+            showSuccess('Terms and conditions accepted!');
+        }
+
+        function acceptPrivacy() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('privacyModal'));
+            modal.hide();
+            
+            showSuccess('Privacy policy acknowledged!');
+        }
+
+        function showSuccess(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.col-md-9.col-lg-10 .p-4');
+            const firstElement = container.children[2]; // After header and progress
+            container.insertBefore(alertDiv, firstElement);
+            
+            setTimeout(() => {
+                if (alertDiv.parentElement) {
+                    alertDiv.remove();
+                }
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

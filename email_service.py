@@ -7,7 +7,7 @@ class EmailService:
         # Use environment variables for security (fallback to hardcoded for development)
         self.api_key = os.getenv('MAILJET_API_KEY', '0a3c09ab8d1565ab903529aeb62d5fad')
         self.secret_key = os.getenv('MAILJET_SECRET_KEY', '1a928ab09d6d44bb39d96498993374c6')
-        self.from_email = os.getenv('FROM_EMAIL', 'sr@createhub.fun')
+        self.from_email = os.getenv('FROM_EMAIL', 'alerts@createhub.fun')
         self.from_name = os.getenv('FROM_NAME', 'CreateHub Bank')
         self.base_url = 'https://api.mailjet.com/v3.1/send'
     

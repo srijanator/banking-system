@@ -95,38 +95,64 @@
                     <!-- Quick Stats -->
                     <div class="row mb-4">
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stat-card" data-stat="accounts">
                                 <div class="card-body">
-                                    <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
-                                    <h5 class="card-title">{{ accounts|length }}</h5>
-                                    <p class="card-text text-muted">Total Accounts</p>
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-credit-card fa-2x text-primary"></i>
+                                        <div class="stat-circle"></div>
+                                    </div>
+                                    <h3 class="card-title mb-2 counter" data-target="{{ accounts|length }}">0</h3>
+                                    <p class="card-text text-muted mb-0">Total Accounts</p>
+                                    <small class="text-success">
+                                        <i class="fas fa-arrow-up me-1"></i>Active
+                                    </small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stat-card" data-stat="balance">
                                 <div class="card-body">
-                                    <i class="fas fa-rupee-sign fa-2x text-success mb-2"></i>
-                                    <h5 class="card-title">Rs {{ "%.2f"|format(accounts|sum(attribute='balance')) }}</h5>
-                                    <p class="card-text text-muted">Total Balance</p>
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-wallet fa-2x text-success"></i>
+                                        <div class="stat-circle"></div>
+                                    </div>
+                                    <h3 class="card-title mb-2">
+                                        <span class="balance-display counter" data-target="{{ "%.0f"|format(accounts|sum(attribute='balance')) }}">0</span>
+                                    </h3>
+                                    <p class="card-text text-muted mb-0">Total Balance</p>
+                                    <small class="text-success">
+                                        <i class="fas fa-shield-alt me-1"></i>Secured
+                                    </small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stat-card" data-stat="transactions">
                                 <div class="card-body">
-                                    <i class="fas fa-exchange-alt fa-2x text-info mb-2"></i>
-                                    <h5 class="card-title">0</h5>
-                                    <p class="card-text text-muted">Recent Transactions</p>
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-exchange-alt fa-2x text-info"></i>
+                                        <div class="stat-circle"></div>
+                                    </div>
+                                    <h3 class="card-title mb-2 counter" data-target="0">0</h3>
+                                    <p class="card-text text-muted mb-0">This Month</p>
+                                    <small class="text-info">
+                                        <i class="fas fa-history me-1"></i>Transactions
+                                    </small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <div class="card text-center">
+                            <div class="card text-center stat-card" data-stat="status">
                                 <div class="card-body">
-                                    <i class="fas fa-chart-line fa-2x text-warning mb-2"></i>
-                                    <h5 class="card-title">Active</h5>
-                                    <p class="card-text text-muted">Account Status</p>
+                                    <div class="stat-icon-wrapper mb-3">
+                                        <i class="fas fa-chart-line fa-2x text-warning"></i>
+                                        <div class="stat-circle"></div>
+                                    </div>
+                                    <h3 class="card-title mb-2 text-success">Active</h3>
+                                    <p class="card-text text-muted mb-0">Account Status</p>
+                                    <small class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>All Systems
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -178,29 +204,48 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Quick Actions</h5>
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+                                    </h5>
+                                    <small class="text-muted">Click to perform common tasks</small>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3 mb-2">
-                                            <a href="{{ url_for('accounts') }}" class="btn btn-outline-primary w-100">
-                                                <i class="fas fa-credit-card me-2"></i>View Accounts
+                                    <div class="row g-3">
+                                        <div class="col-md-3 col-6">
+                                            <a href="{{ url_for('accounts') }}" class="btn btn-outline-primary w-100 quick-action-btn">
+                                                <div class="d-flex flex-column align-items-center py-2">
+                                                    <i class="fas fa-credit-card fa-2x mb-2"></i>
+                                                    <span>View Accounts</span>
+                                                    <small class="text-muted">Manage your accounts</small>
+                                                </div>
                                             </a>
                                         </div>
-                                        <div class="col-md-3 mb-2">
-                                            <a href="{{ url_for('transfer') }}" class="btn btn-outline-success w-100">
-                                                <i class="fas fa-exchange-alt me-2"></i>Transfer Money
+                                        <div class="col-md-3 col-6">
+                                            <a href="{{ url_for('transfer') }}" class="btn btn-outline-success w-100 quick-action-btn">
+                                                <div class="d-flex flex-column align-items-center py-2">
+                                                    <i class="fas fa-exchange-alt fa-2x mb-2"></i>
+                                                    <span>Transfer Money</span>
+                                                    <small class="text-muted">Send funds instantly</small>
+                                                </div>
                                             </a>
                                         </div>
-                                        <div class="col-md-3 mb-2">
-                                            <a href="{{ url_for('create_account') }}" class="btn btn-outline-info w-100">
-                                                <i class="fas fa-plus me-2"></i>Open Account
+                                        <div class="col-md-3 col-6">
+                                            <a href="{{ url_for('create_account') }}" class="btn btn-outline-info w-100 quick-action-btn">
+                                                <div class="d-flex flex-column align-items-center py-2">
+                                                    <i class="fas fa-plus fa-2x mb-2"></i>
+                                                    <span>Open Account</span>
+                                                    <small class="text-muted">Start banking today</small>
+                                                </div>
                                             </a>
                                         </div>
-                                        <div class="col-md-3 mb-2">
-                                            <button class="btn btn-outline-warning w-100" onclick="alert('Feature coming soon!')">
-                                                <i class="fas fa-history me-2"></i>Transaction History
+                                        <div class="col-md-3 col-6">
+                                            <button class="btn btn-outline-warning w-100 quick-action-btn" onclick="showComingSoonModal()">
+                                                <div class="d-flex flex-column align-items-center py-2">
+                                                    <i class="fas fa-history fa-2x mb-2"></i>
+                                                    <span>Transaction History</span>
+                                                    <small class="text-muted">View past transactions</small>
+                                                </div>
                                             </button>
                                         </div>
                                     </div>
@@ -208,6 +253,138 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Financial Summary -->
+                    <div class="row mt-4">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-chart-area me-2 text-info"></i>Financial Overview
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="financial-metric">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="text-muted">Available Balance</span>
+                                                    <i class="fas fa-wallet text-success"></i>
+                                                </div>
+                                                <h4 class="text-success mb-0">Rs {{ "%.2f"|format(accounts|sum(attribute='balance')) }}</h4>
+                                                <small class="text-muted">Across {{ accounts|length }} account{{ 's' if accounts|length != 1 else '' }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="financial-metric">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="text-muted">Monthly Growth</span>
+                                                    <i class="fas fa-trending-up text-primary"></i>
+                                                </div>
+                                                <h4 class="text-primary mb-0">+0.00%</h4>
+                                                <small class="text-muted">This month vs last month</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-4 text-center">
+                                            <div class="metric-icon mb-2">
+                                                <i class="fas fa-piggy-bank fa-2x text-info"></i>
+                                            </div>
+                                            <h6 class="text-muted">Savings Goal</h6>
+                                            <p class="mb-0">Rs 0.00</p>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <div class="metric-icon mb-2">
+                                                <i class="fas fa-shield-alt fa-2x text-success"></i>
+                                            </div>
+                                            <h6 class="text-muted">Security Score</h6>
+                                            <p class="mb-0">Excellent</p>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <div class="metric-icon mb-2">
+                                                <i class="fas fa-clock fa-2x text-warning"></i>
+                                            </div>
+                                            <h6 class="text-muted">Last Login</h6>
+                                            <p class="mb-0">Just now</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-bell me-2 text-warning"></i>Notifications
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="notification-item">
+                                        <div class="d-flex">
+                                            <div class="notification-icon me-3">
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Welcome to Banking!</h6>
+                                                <p class="text-muted small mb-0">Your account is ready to use.</p>
+                                                <small class="text-muted">Just now</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="d-flex">
+                                            <div class="notification-icon me-3">
+                                                <i class="fas fa-shield-alt text-info"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Security Update</h6>
+                                                <p class="text-muted small mb-0">Your account is fully secured.</p>
+                                                <small class="text-muted">1 hour ago</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal -->
+    <div class="modal fade" id="comingSoonModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-rocket me-2 text-primary"></i>Coming Soon!
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-cog fa-spin fa-3x text-primary mb-3"></i>
+                        <h4>Feature Under Development</h4>
+                        <p class="text-muted">We're working hard to bring you this amazing feature. Stay tuned for updates!</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                            <h6>Enhanced Analytics</h6>
+                        </div>
+                        <div class="col-6 text-center">
+                            <i class="fas fa-mobile-alt fa-2x text-info mb-2"></i>
+                            <h6>Mobile App</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="fas fa-bell me-2"></i>Notify Me
+                    </button>
                 </div>
             </div>
         </div>
@@ -221,6 +398,72 @@
             sidebar.classList.toggle('show');
             overlay.classList.toggle('show');
         }
+
+        function showComingSoonModal() {
+            const modal = new bootstrap.Modal(document.getElementById('comingSoonModal'));
+            modal.show();
+        }
+
+        // Initialize dashboard enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate counter numbers
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.floor(current);
+                        setTimeout(updateCounter, 20);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                setTimeout(updateCounter, 500);
+            });
+
+            // Animate stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // Add hover effects to quick action buttons
+            const quickButtons = document.querySelectorAll('.quick-action-btn');
+            quickButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.05)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Initialize notification animations
+            const notifications = document.querySelectorAll('.notification-item');
+            notifications.forEach((notification, index) => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(20px)';
+                
+                setTimeout(() => {
+                    notification.style.transition = 'all 0.4s ease-out';
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateX(0)';
+                }, 1000 + (index * 200));
+            });
+        });
     </script>
 </body>
 </html>

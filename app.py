@@ -135,10 +135,40 @@ def create_account():
     if request.method == 'POST':
         branch_id = request.form['branch_id']
         account_type = request.form['account_type']
+        initial_deposit = request.form.get('initial_deposit', '0')
         
+        # Convert initial deposit to float, default to 0 if empty or invalid
+        try:
+            initial_deposit_amount = float(initial_deposit) if initial_deposit else 0.0
+        except (ValueError, TypeError):
+            initial_deposit_amount = 0.0
+        
+        # Create the account
         account_number = account_model.create_account(session['user_id'], branch_id, account_type)
         if account_number:
-            flash(f'Account created successfully! Account number: {account_number}', 'success')
+            # If there's an initial deposit, process it
+            if initial_deposit_amount > 0:
+                # Get the newly created account ID
+                accounts = account_model.get_accounts(session['user_id'])
+                new_account = next((acc for acc in accounts if acc['account_number'] == account_number), None)
+                
+                if new_account:
+                    # Make the initial deposit
+                    success, message = transaction_model.deposit(
+                        new_account['account_id'], 
+                        initial_deposit_amount, 
+                        'Initial deposit during account opening'
+                    )
+                    
+                    if success:
+                        flash(f'Account created successfully! Account number: {account_number}. Initial deposit of Rs {initial_deposit_amount:.2f} has been added.', 'success')
+                    else:
+                        flash(f'Account created successfully! Account number: {account_number}. However, initial deposit failed: {message}', 'warning')
+                else:
+                    flash(f'Account created successfully! Account number: {account_number}. However, initial deposit could not be processed.', 'warning')
+            else:
+                flash(f'Account created successfully! Account number: {account_number}', 'success')
+            
             return redirect(url_for('accounts'))
         else:
             flash('Account creation failed. Please try again.', 'error')
